@@ -3,82 +3,112 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DevAgent Hub</title>
+<title>DevAgent — GCP + GitHub</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;700&family=Unbounded:wght@400;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;700&family=Unbounded:wght@300;400;700;900&display=swap');
 
 :root {
-  --bg: #04040c;
-  --s1: #0a0a16;
-  --s2: #101020;
-  --border: #1c1c2e;
+  --bg: #05050a;
+  --s1: #0c0c14;
+  --s2: #13131e;
+  --s3: #1a1a28;
+  --border: #1e1e2e;
   --blue: #4285f4;
   --green: #34a853;
   --yellow: #fbbc04;
   --red: #ea4335;
   --teal: #00e5cc;
   --purple: #9c6bff;
-  --pink: #ff6bac;
-  --orange: #ff8c42;
   --text: #eeeef8;
-  --muted: #4a4a72;
+  --muted: #52527a;
+  --dim: #2a2a40;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: var(--bg); color: var(--text); font-family: 'IBM Plex Mono', monospace; min-height: 100vh; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: 'IBM Plex Mono', monospace; min-height: 100vh; overflow-x: hidden; }
 
+/* ── Background ── */
 .canvas {
   position: fixed; inset: 0; z-index: 0; pointer-events: none;
   background:
-    radial-gradient(ellipse 50% 40% at 20% 20%, rgba(66,133,244,.07) 0%, transparent 60%),
-    radial-gradient(ellipse 40% 50% at 80% 70%, rgba(156,107,255,.06) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 30% at 60% 10%, rgba(0,229,204,.04) 0%, transparent 60%);
+    radial-gradient(ellipse 60% 40% at 80% 10%, rgba(66,133,244,.06) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 50% at 10% 80%, rgba(52,168,83,.04) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 60% at 50% 50%, rgba(156,107,255,.03) 0%, transparent 70%);
 }
 .grid {
   position: fixed; inset: 0; z-index: 0; pointer-events: none;
-  background-image: linear-gradient(rgba(255,255,255,.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.015) 1px, transparent 1px);
-  background-size: 50px 50px;
+  background-image: linear-gradient(rgba(255,255,255,.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.02) 1px, transparent 1px);
+  background-size: 60px 60px;
 }
 
-.wrap { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 48px 20px 100px; }
+/* ── Layout ── */
+.wrap { position: relative; z-index: 1; max-width: 960px; margin: 0 auto; padding: 48px 20px 100px; }
 
-/* Header */
-header { text-align: center; margin-bottom: 56px; }
-.hub-logo {
-  width: 72px; height: 72px; border-radius: 22px; margin: 0 auto 24px;
-  background: linear-gradient(135deg, var(--blue) 0%, var(--purple) 50%, var(--teal) 100%);
+/* ── Header ── */
+.header { margin-bottom: 56px; }
+.logo-row { display: flex; align-items: center; gap: 16px; margin-bottom: 28px; }
+.logo-mark {
+  width: 48px; height: 48px; border-radius: 14px;
+  background: linear-gradient(135deg, var(--blue), var(--purple));
   display: flex; align-items: center; justify-content: center;
-  font-size: 32px;
-  box-shadow: 0 0 60px rgba(66,133,244,.25), 0 0 120px rgba(156,107,255,.1);
-  animation: logoGlow 3s ease-in-out infinite alternate;
+  font-size: 22px; flex-shrink: 0;
+  box-shadow: 0 0 30px rgba(66,133,244,.3);
 }
-@keyframes logoGlow {
-  from { box-shadow: 0 0 40px rgba(66,133,244,.2), 0 0 80px rgba(156,107,255,.08); }
-  to   { box-shadow: 0 0 80px rgba(66,133,244,.35), 0 0 140px rgba(156,107,255,.15); }
-}
-h1 { font-family: 'Unbounded', sans-serif; font-size: clamp(26px, 5vw, 44px); font-weight: 900; letter-spacing: -2px; margin-bottom: 10px; }
-.h-teal { color: var(--teal); }
-.h-dim { color: var(--muted); font-weight: 300; }
-.subtitle { font-size: 12px; color: var(--muted); line-height: 1.8; max-width: 460px; margin: 0 auto; }
+.logo-text { font-family: 'Unbounded', sans-serif; font-size: 22px; font-weight: 900; letter-spacing: -1px; }
+.logo-text span { color: var(--teal); }
 
-/* Auth card */
-.auth-card {
+h1 { font-family: 'Unbounded', sans-serif; font-size: clamp(28px, 5vw, 52px); font-weight: 900; line-height: 1.05; letter-spacing: -2px; margin-bottom: 14px; }
+.h1-dim { color: var(--muted); font-weight: 300; }
+.subtitle { font-size: 13px; color: var(--muted); line-height: 1.8; max-width: 520px; }
+
+/* ── Pipeline Steps ── */
+.pipeline {
+  display: flex; align-items: center; gap: 0;
+  margin-bottom: 40px; overflow-x: auto; padding-bottom: 4px;
+}
+.pipe-step {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 16px; border-radius: 8px;
+  font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--muted); border: 1px solid var(--border);
+  background: var(--s1); white-space: nowrap; transition: all .3s;
+  cursor: default;
+}
+.pipe-step.active { color: var(--teal); border-color: var(--teal); background: rgba(0,229,204,.06); }
+.pipe-step.done { color: var(--green); border-color: rgba(52,168,83,.4); background: rgba(52,168,83,.06); }
+.pipe-arrow { color: var(--dim); font-size: 16px; padding: 0 4px; flex-shrink: 0; }
+.pipe-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+
+/* ── Cards ── */
+.card {
   background: var(--s1); border: 1px solid var(--border);
-  border-radius: 20px; padding: 32px; margin-bottom: 24px;
+  border-radius: 18px; padding: 28px; margin-bottom: 16px;
+  transition: border-color .3s, box-shadow .3s;
   position: relative; overflow: hidden;
 }
-.auth-card::before {
+.card::before {
   content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(0,229,204,.3), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.06), transparent);
 }
+.card:hover { border-color: rgba(66,133,244,.25); }
+.card.glow-blue { box-shadow: 0 0 40px rgba(66,133,244,.08); border-color: rgba(66,133,244,.3); }
+.card.glow-green { box-shadow: 0 0 40px rgba(52,168,83,.08); border-color: rgba(52,168,83,.3); }
+.card.glow-teal { box-shadow: 0 0 40px rgba(0,229,204,.08); border-color: rgba(0,229,204,.3); }
 
-.auth-title {
-  font-family: 'Unbounded', sans-serif; font-size: 11px; font-weight: 700;
-  letter-spacing: 2px; text-transform: uppercase; color: var(--teal);
-  margin-bottom: 20px; display: flex; align-items: center; gap: 10px;
+.card-head { display: flex; align-items: center; gap: 14px; margin-bottom: 22px; }
+.card-num {
+  width: 32px; height: 32px; border-radius: 10px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700;
 }
-.auth-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.num-blue { background: rgba(66,133,244,.15); color: var(--blue); }
+.num-green { background: rgba(52,168,83,.15); color: var(--green); }
+.num-teal { background: rgba(0,229,204,.15); color: var(--teal); }
+.num-purple { background: rgba(156,107,255,.15); color: var(--purple); }
+.card-title { font-family: 'Unbounded', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
 
+/* ── Inputs ── */
 .lbl { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
 input[type=text], input[type=password] {
   width: 100%; background: var(--s2); border: 1px solid var(--border);
@@ -90,133 +120,112 @@ input:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(0,229,204,.0
 .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 @media(max-width:580px) { .two-col { grid-template-columns: 1fr; } }
 
-.btn-google {
-  width: 100%; display: flex; align-items: center; justify-content: center; gap: 12px;
-  padding: 14px 24px; border-radius: 12px; background: #fff; color: #1f1f1f;
-  font-size: 14px; font-weight: 600; cursor: pointer; border: none;
-  box-shadow: 0 2px 20px rgba(0,0,0,.4); transition: all .2s;
-  font-family: 'IBM Plex Mono', monospace;
+/* ── Buttons ── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 12px 22px; border-radius: 10px; font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  cursor: pointer; border: none; transition: all .2s; width: 100%;
 }
-.btn-google:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,.5); }
-.btn-google:disabled { opacity: .4; cursor: not-allowed; }
+.btn-google { background: #fff; color: #1f1f1f; font-size: 13px; font-weight: 600; letter-spacing: 0; box-shadow: 0 2px 16px rgba(0,0,0,.4); }
+.btn-google:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(0,0,0,.5); }
+.btn-teal { background: linear-gradient(135deg, var(--teal), #00bfa5); color: #000; }
+.btn-teal:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,229,204,.3); }
+.btn-blue { background: var(--blue); color: #fff; }
+.btn-blue:hover:not(:disabled) { background: #5a95f5; transform: translateY(-2px); box-shadow: 0 8px 28px rgba(66,133,244,.35); }
+.btn-purple { background: linear-gradient(135deg, var(--purple), var(--blue)); color: #fff; }
+.btn-purple:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(156,107,255,.35); }
+.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--muted); }
+.btn-outline:hover:not(:disabled) { border-color: var(--teal); color: var(--teal); }
+.btn:disabled { opacity: .35; cursor: not-allowed; }
+.btn-sm { padding: 7px 14px; font-size: 10px; width: auto; border-radius: 8px; }
+.btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
 
-/* User strip */
+/* ── User strip ── */
 .user-strip {
   display: flex; align-items: center; gap: 14px;
-  background: rgba(0,229,204,.06); border: 1px solid rgba(0,229,204,.2);
-  border-radius: 14px; padding: 14px 18px; margin-bottom: 24px;
+  background: rgba(52,168,83,.07); border: 1px solid rgba(52,168,83,.25);
+  border-radius: 12px; padding: 12px 16px; margin-bottom: 16px;
   animation: fadeUp .4s ease;
 }
-.avatar {
-  width: 44px; height: 44px; border-radius: 50%;
-  background: linear-gradient(135deg, var(--blue), var(--teal));
-  display: flex; align-items: center; justify-content: center;
-  font-size: 18px; flex-shrink: 0; border: 2px solid rgba(0,229,204,.3);
-}
+.avatar { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, var(--blue), var(--green)); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
 .user-info { flex: 1; }
-.user-name { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+.user-name { font-size: 13px; font-weight: 700; }
 .user-email { font-size: 10px; color: var(--muted); }
-.user-project { font-size: 10px; color: var(--teal); margin-top: 2px; }
-.conn-badge {
-  background: rgba(0,229,204,.15); color: var(--teal);
-  font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
-  padding: 5px 12px; border-radius: 20px; flex-shrink: 0;
-  border: 1px solid rgba(0,229,204,.2);
-}
+.auth-badge { background: rgba(52,168,83,.2); color: var(--green); font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 4px 10px; border-radius: 20px; flex-shrink: 0; }
 
-/* Token display */
-.token-strip {
-  background: var(--s2); border: 1px solid var(--border); border-radius: 10px;
-  padding: 10px 14px; font-size: 10px; color: var(--muted);
-  display: flex; align-items: center; gap: 10px; margin-top: 12px;
+/* ── Commit list ── */
+.commit-list { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+.commit-item {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--s2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 12px 14px;
+  border-left: 3px solid var(--dim);
+  transition: all .3s; animation: fadeUp .3s ease;
 }
-.token-val { flex: 1; font-family: 'IBM Plex Mono', monospace; color: rgba(0,229,204,.6); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.token-expiry { color: var(--yellow); flex-shrink: 0; font-size: 9px; }
+.commit-item.processing { border-left-color: var(--yellow); }
+.commit-item.annotated { border-left-color: var(--green); }
+.commit-item.error { border-left-color: var(--red); }
+.c-sha { font-size: 10px; color: var(--purple); background: rgba(156,107,255,.1); padding: 3px 8px; border-radius: 5px; flex-shrink: 0; }
+.c-msg { flex: 1; font-size: 11px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.c-date { font-size: 10px; color: var(--muted); flex-shrink: 0; }
+.c-status { font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 3px 8px; border-radius: 10px; flex-shrink: 0; }
+.cs-pending { background: rgba(82,82,122,.2); color: var(--muted); }
+.cs-processing { background: rgba(251,188,4,.2); color: var(--yellow); }
+.cs-done { background: rgba(52,168,83,.2); color: var(--green); }
+.cs-error { background: rgba(234,67,53,.2); color: var(--red); }
 
-/* Agent grid */
-.section-title {
-  font-family: 'Unbounded', sans-serif; font-size: 11px; font-weight: 700;
-  letter-spacing: 2px; text-transform: uppercase;
-  margin-bottom: 16px; display: flex; align-items: center; gap: 12px;
-}
-.section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.expand-btn { background: none; border: none; color: var(--muted); font-size: 9px; cursor: pointer; font-family: inherit; letter-spacing: 1px; text-transform: uppercase; padding: 0; margin-top: 4px; transition: color .2s; }
+.expand-btn:hover { color: var(--teal); }
+.commit-notes { display: none; margin-top: 10px; padding: 10px 12px; background: var(--bg); border-radius: 8px; font-size: 10px; line-height: 1.9; color: var(--muted); border: 1px solid var(--border); }
+.commit-notes.open { display: block; }
 
-.agents-grid {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 14px; margin-bottom: 32px;
-}
+/* ── Progress ── */
+.progress-wrap { margin-bottom: 12px; }
+.progress-bar { height: 3px; background: var(--s2); border-radius: 2px; overflow: hidden; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, var(--blue), var(--teal)); border-radius: 2px; transition: width .5s ease; }
+.progress-row { display: flex; justify-content: space-between; font-size: 10px; color: var(--muted); margin-bottom: 6px; }
+.badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+.badge-idle { background: rgba(82,82,122,.2); color: var(--muted); }
+.badge-run { background: rgba(0,229,204,.15); color: var(--teal); }
+.badge-done { background: rgba(52,168,83,.2); color: var(--green); }
+.badge-err { background: rgba(234,67,53,.2); color: var(--red); }
+.pulse { width: 7px; height: 7px; border-radius: 50%; background: currentColor; animation: pulse 1.2s ease infinite; flex-shrink: 0; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.7)} }
 
-.agent-card {
-  background: var(--s1); border: 1px solid var(--border);
-  border-radius: 16px; padding: 22px;
-  transition: all .3s; position: relative; overflow: hidden;
-  cursor: pointer;
-}
-.agent-card::before {
-  content: ''; position: absolute; inset: 0; border-radius: 16px;
-  background: linear-gradient(135deg, transparent 60%, rgba(255,255,255,.02));
-  pointer-events: none;
-}
-.agent-card:hover { transform: translateY(-3px); }
-.agent-card.ready:hover { border-color: var(--accent-color, var(--teal)); box-shadow: 0 8px 32px rgba(0,0,0,.3); }
-.agent-card.locked { opacity: .5; cursor: default; }
-.agent-card.locked:hover { transform: none; }
+/* ── Terminal ── */
+.terminal { background: #020208; border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-top: 20px; }
+.term-bar { background: var(--s1); padding: 10px 16px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border); }
+.tdot { width: 11px; height: 11px; border-radius: 50%; }
+.term-label { flex: 1; text-align: center; font-size: 10px; color: var(--muted); }
+.term-body { padding: 16px 18px; min-height: 200px; max-height: 320px; overflow-y: auto; font-size: 11px; line-height: 2; }
+.tl { display: flex; gap: 10px; margin-bottom: 1px; }
+.tt { color: var(--dim); flex-shrink: 0; }
+.ti { color: var(--text); } .ts { color: var(--green); } .tw { color: var(--yellow); } .te { color: var(--red); } .ta { color: var(--blue); } .tc { color: var(--teal); } .tp { color: var(--purple); }
+.blink { animation: blink 1s step-end infinite; }
+@keyframes blink { 50% { opacity: 0; } }
 
-.agent-emoji { font-size: 32px; margin-bottom: 12px; display: block; }
-.agent-name { font-family: 'Unbounded', sans-serif; font-size: 13px; font-weight: 700; margin-bottom: 6px; }
-.agent-desc { font-size: 11px; color: var(--muted); line-height: 1.6; margin-bottom: 14px; }
-.agent-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
-.agent-tag {
-  font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
-  padding: 3px 8px; border-radius: 5px; border: 1px solid;
-}
-
-.launch-btn {
-  width: 100%; padding: 10px; border-radius: 8px;
-  font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 700;
-  letter-spacing: 1px; text-transform: uppercase;
-  cursor: pointer; border: none; transition: all .2s;
-  display: flex; align-items: center; justify-content: center; gap: 6px;
-}
-.launch-btn.ready { background: var(--accent-bg, rgba(0,229,204,.1)); color: var(--accent-color, var(--teal)); border: 1px solid var(--accent-color, var(--teal)); }
-.launch-btn.ready:hover { background: var(--accent-bg-hover, rgba(0,229,204,.2)); }
-.launch-btn.locked-btn { background: rgba(74,74,114,.1); color: var(--muted); border: 1px solid var(--border); cursor: default; }
-
-.coming-badge {
-  position: absolute; top: 14px; right: 14px;
-  background: rgba(74,74,114,.3); color: var(--muted);
-  font-size: 8px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
-  padding: 3px 8px; border-radius: 5px; border: 1px solid var(--border);
-}
-
-/* How it works */
-.how-card {
-  background: var(--s1); border: 1px solid var(--border);
-  border-radius: 16px; padding: 24px; margin-bottom: 24px;
-}
-.how-steps { display: flex; flex-direction: column; gap: 12px; margin-top: 14px; }
-.how-step { display: flex; gap: 14px; align-items: flex-start; }
-.how-num {
-  width: 28px; height: 28px; border-radius: 8px; flex-shrink: 0;
-  background: rgba(0,229,204,.1); border: 1px solid rgba(0,229,204,.2);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 11px; font-weight: 700; color: var(--teal);
-}
-.how-text { font-size: 11px; color: var(--muted); line-height: 1.7; padding-top: 4px; }
-.how-text strong { color: var(--text); }
-.how-text code { color: var(--teal); font-size: 10px; }
-
-/* Token expiry countdown */
-.expiry-bar { height: 2px; background: var(--border); border-radius: 1px; overflow: hidden; margin-top: 8px; }
-.expiry-fill { height: 100%; background: linear-gradient(90deg, var(--green), var(--yellow)); transition: width 1s linear; border-radius: 1px; }
-
-/* Hint */
-.hint { background: rgba(251,188,4,.05); border: 1px solid rgba(251,188,4,.15); border-radius: 10px; padding: 12px 16px; margin-top: 12px; font-size: 11px; line-height: 1.8; color: var(--muted); }
+/* ── Info / hint ── */
+.info { background: rgba(66,133,244,.05); border: 1px solid rgba(66,133,244,.2); border-radius: 10px; padding: 12px 16px; margin-bottom: 16px; font-size: 11px; line-height: 1.8; color: var(--muted); }
+.info strong { color: var(--blue); }
+.hint { background: rgba(251,188,4,.05); border: 1px solid rgba(251,188,4,.2); border-radius: 10px; padding: 12px 16px; margin-top: 12px; font-size: 11px; line-height: 1.8; color: var(--muted); }
 .hint strong { color: var(--yellow); }
-code { font-family: 'IBM Plex Mono', monospace; color: var(--teal); font-size: 10px; }
+.success-box { background: rgba(52,168,83,.06); border: 1px solid rgba(52,168,83,.25); border-radius: 10px; padding: 14px 16px; margin-top: 12px; font-size: 11px; line-height: 1.8; color: var(--muted); }
+.success-box strong { color: var(--green); }
+
+/* ── Result cards ── */
+.result-card { background: var(--bg); border: 1px solid var(--teal); border-radius: 12px; padding: 18px; margin-bottom: 12px; animation: fadeUp .4s ease; }
+.result-label { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--teal); margin-bottom: 10px; }
+.result-val { font-size: 11px; color: var(--teal); background: var(--s2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; word-break: break-all; line-height: 1.7; max-height: 160px; overflow-y: auto; white-space: pre-wrap; }
+.copy-btn { display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; padding: 5px 12px; background: rgba(0,229,204,.08); border: 1px solid var(--teal); color: var(--teal); border-radius: 6px; cursor: pointer; font-size: 10px; font-weight: 700; font-family: inherit; letter-spacing: 1px; text-transform: uppercase; transition: all .2s; }
+.copy-btn:hover { background: rgba(0,229,204,.15); }
+
+.gh-link { display: inline-flex; align-items: center; gap: 8px; color: var(--teal); text-decoration: none; font-size: 12px; padding: 10px 18px; border: 1px solid var(--teal); border-radius: 10px; transition: all .2s; margin-top: 16px; }
+.gh-link:hover { background: rgba(0,229,204,.08); transform: translateY(-1px); }
 
 @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
 .hidden { display: none !important; }
+code { font-family: 'IBM Plex Mono', monospace; color: var(--teal); font-size: 10px; }
 </style>
 </head>
 <body>
@@ -225,15 +234,36 @@ code { font-family: 'IBM Plex Mono', monospace; color: var(--teal); font-size: 1
 <div class="wrap">
 
 <!-- Header -->
-<header>
-  <div class="hub-logo">⚡</div>
-  <h1>Dev<span class="h-teal">Agent</span> <span class="h-dim">Hub</span></h1>
-  <p class="subtitle" style="margin-top:10px;">Sign in once with Google. Launch any agent — your OAuth token is passed automatically. No repeated logins.</p>
-</header>
+<div class="header">
+  <div class="logo-row">
+    <div class="logo-mark">⚡</div>
+    <div class="logo-text">Dev<span>Agent</span></div>
+  </div>
+  <h1>GCP + GitHub<br><span class="h1-dim">Unified Agent</span></h1>
+  <p class="subtitle" style="margin-top:12px;">Sign in with Google → AI analyzes your GitHub commits → Posts detailed annotations powered by Vertex AI. No API keys needed.</p>
+</div>
 
-<!-- Auth Card -->
-<div class="auth-card" id="authCard">
-  <div class="auth-title">🔐 Google Cloud Authentication</div>
+<!-- Pipeline -->
+<div class="pipeline">
+  <div class="pipe-step active" id="pipe1"><span class="pipe-dot"></span> 01 Google Login</div>
+  <div class="pipe-arrow">→</div>
+  <div class="pipe-step" id="pipe2"><span class="pipe-dot"></span> 02 GitHub Connect</div>
+  <div class="pipe-arrow">→</div>
+  <div class="pipe-step" id="pipe3"><span class="pipe-dot"></span> 03 Fetch Commits</div>
+  <div class="pipe-arrow">→</div>
+  <div class="pipe-step" id="pipe4"><span class="pipe-dot"></span> 04 AI Annotate</div>
+</div>
+
+<!-- Step 1: Google OAuth -->
+<div class="card glow-blue" id="s1">
+  <div class="card-head">
+    <div class="card-num num-blue">01</div>
+    <div class="card-title" style="color:var(--blue);">Sign in with Google</div>
+  </div>
+
+  <div class="info">
+    <strong>OAuth2 authentication.</strong> Uses your existing GCP account — the same one you configured APIs with. Your access token powers the Vertex AI calls. Nothing stored anywhere.
+  </div>
 
   <div class="two-col" style="margin-bottom:4px;">
     <div>
@@ -242,179 +272,159 @@ code { font-family: 'IBM Plex Mono', monospace; color: var(--teal); font-size: 1
     </div>
     <div>
       <div class="lbl">OAuth2 Client ID</div>
-      <input type="text" id="clientId" placeholder="xxxxx.apps.googleusercontent.com" />
+      <input type="text" id="clientId" placeholder="123456789-abc.apps.googleusercontent.com" />
     </div>
   </div>
 
-  <button class="btn-google" id="loginBtn" onclick="startOAuth()">
-    <svg width="20" height="20" viewBox="0 0 24 24">
+  <button class="btn btn-google" onclick="startOAuth()">
+    <svg width="18" height="18" viewBox="0 0 24 24">
       <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
       <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
       <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
       <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
     </svg>
-    Sign in with Google to Launch Agents
+    Sign in with Google
   </button>
 
   <div class="hint">
-    <strong>📋 One-time setup:</strong> GCP Console → Credentials → OAuth2 Client ID → Add <code>https://maheshreddy23.github.io</code> as JS origin + <code>https://maheshreddy23.github.io/gcp-setup/</code> as redirect URI
+    <strong>📋 Need an OAuth2 Client ID?</strong> GCP Console → APIs & Services → Credentials → + Create Credentials → OAuth 2.0 Client ID → Web app → Add <code>https://maheshreddy23.github.io</code> as origin + <code>https://maheshreddy23.github.io/gcp-setup/</code> as redirect URI
   </div>
 </div>
 
-<!-- User connected strip -->
+<!-- User strip -->
 <div id="userStrip" class="user-strip hidden">
   <div class="avatar">👤</div>
   <div class="user-info">
     <div class="user-name" id="userName">—</div>
     <div class="user-email" id="userEmail">—</div>
-    <div class="user-project" id="userProject">—</div>
   </div>
-  <span class="conn-badge">✓ Authenticated</span>
+  <span class="auth-badge">✓ GCP Connected</span>
 </div>
 
-<!-- Token strip -->
-<div id="tokenStrip" class="hidden" style="margin-bottom:24px;">
-  <div class="token-strip">
-    <span style="color:var(--teal);font-size:10px;flex-shrink:0;">TOKEN</span>
-    <span class="token-val" id="tokenPreview">—</span>
-    <span class="token-expiry" id="tokenExpiry">59:00</span>
+<!-- Step 2: GitHub -->
+<div class="card hidden" id="s2">
+  <div class="card-head">
+    <div class="card-num num-purple">02</div>
+    <div class="card-title" style="color:var(--purple);">Connect GitHub Repository</div>
   </div>
-  <div class="expiry-bar"><div class="expiry-fill" id="expiryFill" style="width:100%"></div></div>
+
+  <div class="two-col">
+    <div>
+      <div class="lbl">GitHub Username</div>
+      <input type="text" id="ghUser" value="maheshreddy23" placeholder="username" />
+    </div>
+    <div>
+      <div class="lbl">Repository Name</div>
+      <input type="text" id="ghRepo" value="BTBU" placeholder="repo-name" />
+    </div>
+  </div>
+
+  <div class="lbl">GitHub Personal Access Token</div>
+  <input type="password" id="ghToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" />
+
+  <button class="btn btn-blue" onclick="fetchCommits()">
+    🔍 Fetch Commits from GitHub
+  </button>
 </div>
 
-<!-- Agent Launcher -->
-<div id="launcherSection" class="hidden">
-
-  <div class="section-title" style="color:var(--teal)">⚡ Available Agents</div>
-
-  <div class="agents-grid" id="agentsGrid">
-
-    <!-- Commit Annotator -->
-    <div class="agent-card ready" style="--accent-color:#9c6bff;--accent-bg:rgba(156,107,255,.08);--accent-bg-hover:rgba(156,107,255,.15);">
-      <span class="agent-emoji">🔍</span>
-      <div class="agent-name">Commit Annotator</div>
-      <div class="agent-desc">Reads your GitHub commits, analyzes each diff with Vertex AI, and posts detailed structured notes as commit comments.</div>
-      <div class="agent-tags">
-        <span class="agent-tag" style="color:var(--purple);border-color:rgba(156,107,255,.3);background:rgba(156,107,255,.08);">Vertex AI</span>
-        <span class="agent-tag" style="color:#6baaff;border-color:rgba(107,170,255,.3);background:rgba(107,170,255,.08);">GitHub</span>
-        <span class="agent-tag" style="color:var(--green);border-color:rgba(52,168,83,.3);background:rgba(52,168,83,.08);">Ready</span>
-      </div>
-      <button class="launch-btn ready" onclick="launchAgent('commit-annotator')">🚀 Launch Agent</button>
-    </div>
-
-    <!-- Research Agent (coming soon) -->
-    <div class="agent-card locked">
-      <span class="coming-badge">Coming Soon</span>
-      <span class="agent-emoji">🌐</span>
-      <div class="agent-name">Research Agent</div>
-      <div class="agent-desc">Search the web, summarise topics, and compile structured research reports using Vertex AI.</div>
-      <div class="agent-tags">
-        <span class="agent-tag" style="color:var(--muted);border-color:var(--border);background:transparent;">Vertex AI</span>
-        <span class="agent-tag" style="color:var(--muted);border-color:var(--border);background:transparent;">Web Search</span>
-      </div>
-      <button class="launch-btn locked-btn">🔒 Coming Soon</button>
-    </div>
-
-    <!-- Document Agent (coming soon) -->
-    <div class="agent-card locked">
-      <span class="coming-badge">Coming Soon</span>
-      <span class="agent-emoji">📄</span>
-      <div class="agent-name">Document Agent</div>
-      <div class="agent-desc">Upload PDFs — agent extracts, summarises and answers questions using Document AI + Gemini.</div>
-      <div class="agent-tags">
-        <span class="agent-tag" style="color:var(--muted);border-color:var(--border);background:transparent;">Document AI</span>
-        <span class="agent-tag" style="color:var(--muted);border-color:var(--border);background:transparent;">Vertex AI</span>
-      </div>
-      <button class="launch-btn locked-btn">🔒 Coming Soon</button>
-    </div>
-
-    <!-- Email Agent (coming soon) -->
-    <div class="agent-card locked">
-      <span class="coming-badge">Coming Soon</span>
-      <span class="agent-emoji">📧</span>
-      <div class="agent-name">Email Agent</div>
-      <div class="agent-desc">Connect Gmail, auto-draft replies, summarise threads and manage inbox with AI assistance.</div>
-      <div class="agent-tags">
-        <span class="agent-tag" style="color:var(--muted);border-color:var(--border);background:transparent;">Gmail API</span>
-        <span class="agent-tag" style="color:var(--muted);border-color:var(--border);background:transparent;">Vertex AI</span>
-      </div>
-      <button class="launch-btn locked-btn">🔒 Coming Soon</button>
-    </div>
-
-    <!-- Code Agent (coming soon) -->
-    <div class="agent-card locked">
-      <span class="coming-badge">Coming Soon</span>
-      <span class="agent-emoji">💻</span>
-      <div class="agent-name">Code Review Agent</div>
-      <div class="agent-desc">Automatically review pull requests, suggest improvements and detect bugs using Vertex AI.</div>
-      <div class="agent-tags">
-        <span class="agent-tag" style="color:var(--muted);border-color:var(--border);background:transparent;">Vertex AI</span>
-        <span class="agent-tag" style="color:var(--muted);border-color:var(--border);background:transparent;">GitHub</span>
-      </div>
-      <button class="launch-btn locked-btn">🔒 Coming Soon</button>
-    </div>
-
-    <!-- Data Agent (coming soon) -->
-    <div class="agent-card locked">
-      <span class="coming-badge">Coming Soon</span>
-      <span class="agent-emoji">📊</span>
-      <div class="agent-name">Data Agent</div>
-      <div class="agent-desc">Upload CSVs or connect BigQuery — agent analyses trends and generates visual reports.</div>
-      <div class="agent-tags">
-        <span class="agent-tag" style="color:var(--muted);border-color:var(--border);background:transparent;">BigQuery</span>
-        <span class="agent-tag" style="color:var(--muted);border-color:var(--border);background:transparent;">Vertex AI</span>
-      </div>
-      <button class="launch-btn locked-btn">🔒 Coming Soon</button>
-    </div>
-
+<!-- Step 3: Commits -->
+<div class="card hidden" id="s3">
+  <div class="card-head">
+    <div class="card-num num-teal">03</div>
+    <div class="card-title" style="color:var(--teal);">Commits Found</div>
   </div>
-
-  <!-- How it works -->
-  <div class="how-card">
-    <div class="section-title" style="color:var(--muted);font-size:10px;">🔧 How Token Passing Works</div>
-    <div class="how-steps">
-      <div class="how-step">
-        <div class="how-num">1</div>
-        <div class="how-text">You sign in here once → Hub gets your <strong>OAuth2 token</strong> from Google</div>
-      </div>
-      <div class="how-step">
-        <div class="how-num">2</div>
-        <div class="how-text">You click <strong>Launch Agent</strong> → Hub redirects to the agent URL with token in the URL:<br><code>https://agent-url/?token=ya29.xxx&project=my-proj</code></div>
-      </div>
-      <div class="how-step">
-        <div class="how-num">3</div>
-        <div class="how-text">Agent reads token from URL → <strong>starts working immediately</strong>, no login needed</div>
-      </div>
-      <div class="how-step">
-        <div class="how-num">4</div>
-        <div class="how-text">Token expires in ~1 hour → come back to Hub and <strong>sign in again</strong> to refresh</div>
-      </div>
-    </div>
-  </div>
-
+  <div class="commit-list" id="commitList"></div>
 </div>
+
+<!-- Step 4: Annotate -->
+<div class="card hidden" id="s4">
+  <div class="card-head">
+    <div class="card-num num-green">04</div>
+    <div class="card-title" style="color:var(--green);">AI Annotation via Vertex AI</div>
+  </div>
+
+  <div class="info">
+    <strong>Powered by Vertex AI Gemini</strong> using your GCP OAuth2 token. Each commit diff is analyzed and a structured comment is posted directly on GitHub — no Gemini API key needed.
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-row">
+      <span id="statusBadge" class="badge badge-idle"><span class="pulse"></span>Ready</span>
+      <span id="progressLabel" style="font-size:10px;color:var(--muted);">0 / 0 annotated</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  </div>
+
+  <button class="btn btn-purple" id="annotateBtn" onclick="annotateAll()" disabled>
+    🤖 Annotate All Commits with Vertex AI
+  </button>
+
+  <div class="hint">
+    <strong>📌 Where to find notes:</strong> GitHub → open any commit → scroll to bottom → Comments section. Each comment has structured What Changed / Functional Impact / Technical Notes.
+  </div>
+</div>
+
+<!-- Terminal -->
+<div class="terminal">
+  <div class="term-bar">
+    <div class="tdot" style="background:#ff5f57"></div>
+    <div class="tdot" style="background:#ffbd2e"></div>
+    <div class="tdot" style="background:#28ca41"></div>
+    <div class="term-label">devagent — unified log</div>
+  </div>
+  <div class="term-body" id="termBody">
+    <div class="tl"><span class="tt">00:00</span><span class="ti">DevAgent ready. Sign in with Google to begin.</span></div>
+    <div class="tl"><span class="tt">00:00</span><span class="ti">Pipeline: GCP OAuth → GitHub → Vertex AI → Commit Comments</span></div>
+    <div class="tl"><span class="tt"></span><span class="ti blink">█</span></div>
+  </div>
+</div>
+
+<!-- Done -->
+<div id="doneSection" class="hidden" style="text-align:center;margin-top:20px;">
+  <a id="repoLink" class="gh-link" href="#" target="_blank">🔗 View Annotated Commits on GitHub</a>
+</div>
+
 </div>
 
 <script>
-let accessToken = null;
-let projectId = null;
-let tokenExpiry = null;
-let expiryTimer = null;
+const T0 = Date.now();
+let accessToken = null, projectId = null;
+let commits = [], isRunning = false;
 
-// ── Agent Registry — add new agents here ──────────────────────────────
-const AGENTS = {
-  'commit-annotator': 'https://maheshreddy23.github.io/commit-annotator/'
-  // Add more agents here as you build them:
-  // 'research-agent': 'https://maheshreddy23.github.io/research-agent/',
-  // 'document-agent': 'https://maheshreddy23.github.io/document-agent/',
-};
+// ── Logging ──────────────────────────────────────────────────────────
+function lt() { const s=Math.floor((Date.now()-T0)/1000); return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); }
+function log(msg, type='i') {
+  const body = document.getElementById('termBody');
+  const blink = body.querySelector('.blink');
+  if (blink) blink.closest('.tl')?.remove();
+  const line = document.createElement('div');
+  line.className = 'tl';
+  line.innerHTML = `<span class="tt">${lt()}</span><span class="t${type}">${msg}</span>`;
+  body.appendChild(line);
+  const cur = document.createElement('div');
+  cur.className = 'tl';
+  cur.innerHTML = `<span class="tt"></span><span class="ti blink">█</span>`;
+  body.appendChild(cur);
+  body.scrollTop = body.scrollHeight;
+}
 
-// ── OAuth2 ────────────────────────────────────────────────────────────
+// ── Pipeline ─────────────────────────────────────────────────────────
+function setPipe(step) {
+  for (let i = 1; i <= 4; i++) {
+    const el = document.getElementById(`pipe${i}`);
+    el.classList.remove('active','done');
+    if (i < step) el.classList.add('done');
+    else if (i === step) el.classList.add('active');
+  }
+}
+
+// ── OAuth2 ───────────────────────────────────────────────────────────
 function startOAuth() {
   projectId = document.getElementById('projectId').value.trim();
   const clientId = document.getElementById('clientId').value.trim();
-  if (!projectId || !clientId) { alert('Please enter Project ID and OAuth2 Client ID'); return; }
+  if (!projectId || !clientId) { log('❌ Enter Project ID and OAuth2 Client ID', 'e'); return; }
 
+  log('Opening Google OAuth2 popup...', 'a');
   const scopes = [
     'https://www.googleapis.com/auth/cloud-platform',
     'https://www.googleapis.com/auth/service.management',
@@ -428,24 +438,19 @@ function startOAuth() {
     include_granted_scopes: 'true', prompt: 'select_account'
   });
 
-  const popup = window.open(
-    `https://accounts.google.com/o/oauth2/v2/auth?${params}`,
-    'oauth2', 'width=500,height=620,left=200,top=80'
-  );
+  const popup = window.open(`https://accounts.google.com/o/oauth2/v2/auth?${params}`, 'oauth2', 'width=500,height=620,left=200,top=80');
 
   const timer = setInterval(() => {
     try {
       const hash = popup?.location?.hash;
       if (hash && hash.includes('access_token')) {
         clearInterval(timer); popup.close();
-        const tp = new URLSearchParams(hash.substring(1));
-        accessToken = tp.get('access_token');
-        const expiresIn = parseInt(tp.get('expires_in') || '3600');
-        tokenExpiry = Date.now() + expiresIn * 1000;
+        accessToken = new URLSearchParams(hash.substring(1)).get('access_token');
+        log('✓ OAuth2 token received', 's');
         fetchUserInfo();
       }
     } catch(e) {}
-    if (popup?.closed && !accessToken) { clearInterval(timer); }
+    if (popup?.closed && !accessToken) { clearInterval(timer); log('⚠ Popup closed before completing sign-in', 'w'); }
   }, 500);
 }
 
@@ -455,63 +460,263 @@ async function fetchUserInfo() {
       headers: { 'Authorization': `Bearer ${accessToken}` }
     });
     const user = await res.json();
+    log(`✓ Signed in: ${user.email}`, 's');
+    log(`✓ GCP Project: ${projectId}`, 's');
 
     document.getElementById('userName').textContent = user.name || user.email;
     document.getElementById('userEmail').textContent = user.email;
-    document.getElementById('userProject').textContent = `Project: ${projectId}`;
-    document.getElementById('tokenPreview').textContent = accessToken.slice(0, 48) + '...';
-
     document.getElementById('userStrip').classList.remove('hidden');
-    document.getElementById('tokenStrip').classList.remove('hidden');
-    document.getElementById('launcherSection').classList.remove('hidden');
-    document.getElementById('authCard').style.opacity = '0.5';
+    document.getElementById('s2').classList.remove('hidden');
+    setPipe(2);
+    log('✓ Ready — connect your GitHub repo ↓', 's');
+  } catch(e) { log(`❌ ${e.message}`, 'e'); }
+}
 
-    startExpiryCountdown();
-  } catch(e) {
-    alert('Sign-in failed: ' + e.message);
+// ── GitHub ───────────────────────────────────────────────────────────
+async function ghFetch(path) {
+  const token = document.getElementById('ghToken').value.trim();
+  const res = await fetch(`https://api.github.com${path}`, {
+    headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+  });
+  const json = await res.json();
+  if (!res.ok) throw new Error(json.message || `GitHub ${res.status}`);
+  return json;
+}
+
+async function ghPost(path, body) {
+  const token = document.getElementById('ghToken').value.trim();
+  const res = await fetch(`https://api.github.com${path}`, {
+    method: 'POST',
+    headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  const json = await res.json();
+  if (!res.ok) throw new Error(json.message || `GitHub ${res.status}`);
+  return json;
+}
+
+async function fetchCommits() {
+  const user = document.getElementById('ghUser').value.trim();
+  const repo = document.getElementById('ghRepo').value.trim();
+  const token = document.getElementById('ghToken').value.trim();
+  if (!user || !repo || !token) { log('❌ Fill in GitHub details', 'e'); return; }
+
+  log(`Fetching commits from ${user}/${repo}...`, 'a');
+  try {
+    commits = (await ghFetch(`/repos/${user}/${repo}/commits?per_page=50`)).reverse();
+    log(`✓ Found ${commits.length} commits`, 's');
+    renderCommits();
+    document.getElementById('s3').classList.remove('hidden');
+    document.getElementById('s4').classList.remove('hidden');
+    document.getElementById('annotateBtn').disabled = false;
+    setPipe(3);
+  } catch(e) { log(`❌ ${e.message}`, 'e'); }
+}
+
+function renderCommits() {
+  const list = document.getElementById('commitList');
+  list.innerHTML = '';
+  commits.forEach((c, i) => {
+    const date = new Date(c.commit.author.date).toLocaleDateString();
+    const msg = c.commit.message.split('\n')[0].slice(0, 55);
+    const div = document.createElement('div');
+    div.className = 'commit-item';
+    div.id = `ci-${i}`;
+    div.innerHTML = `
+      <span class="c-sha">${c.sha.slice(0,7)}</span>
+      <span class="c-msg">${msg}</span>
+      <span class="c-date">${date}</span>
+      <span class="c-status cs-pending" id="cst-${i}">Pending</span>
+    `;
+    list.appendChild(div);
+  });
+}
+
+// ── Vertex AI via OAuth token ─────────────────────────────────────────
+async function callVertexAI(prompt) {
+  const location = 'us-central1';
+  const model = 'gemini-2.0-flash-001';
+  const url = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/${model}:generateContent`;
+
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${accessToken}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      contents: [{ role: 'user', parts: [{ text: prompt }] }],
+      generationConfig: { maxOutputTokens: 1024, temperature: 0.3 }
+    })
+  });
+
+  const data = await res.json();
+  if (data.error) throw new Error(data.error.message);
+  return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+}
+
+// ── Annotate ─────────────────────────────────────────────────────────
+async function annotateAll() {
+  if (isRunning) return;
+  isRunning = true;
+  document.getElementById('annotateBtn').disabled = true;
+  setPipe(4);
+
+  const user = document.getElementById('ghUser').value.trim();
+  const repo = document.getElementById('ghRepo').value.trim();
+  let success = 0;
+
+  setStatus('run', 'Annotating...');
+  log(`Starting Vertex AI annotation for ${commits.length} commits...`, 'a');
+
+  for (let i = 0; i < commits.length; i++) {
+    const c = commits[i];
+    const sha = c.sha;
+    const short = sha.slice(0, 7);
+    const msg = c.commit.message.split('\n')[0];
+    const isFirst = i === 0;
+
+    setCommitStatus(i, 'processing', 'Analyzing...');
+    log(`[${i+1}/${commits.length}] ${short} — fetching diff...`);
+
+    try {
+      // Check if already annotated
+      const existing = await ghFetch(`/repos/${user}/${repo}/commits/${sha}/comments`);
+      if (existing.some(c => c.body?.includes('Auto-annotated by DevAgent'))) {
+        log(`  ⏭ ${short} already annotated`, 'c');
+        setCommitStatus(i, 'annotated', 'Already done');
+        success++;
+        setProgress(i + 1, commits.length);
+        continue;
+      }
+
+      // Get diff
+      const diffRes = await fetch(`https://api.github.com/repos/${user}/${repo}/commits/${sha}`, {
+        headers: { 'Authorization': `token ${document.getElementById('ghToken').value.trim()}`, 'Accept': 'application/vnd.github.v3.diff' }
+      });
+      const diff = await diffRes.text();
+
+      // Get stats
+      const detail = await ghFetch(`/repos/${user}/${repo}/commits/${sha}`);
+      const stats = detail.stats || {};
+
+      log(`  → Vertex AI analyzing...`, 'p');
+
+      // Build prompt
+      const prompt = isFirst
+        ? `You are a senior developer documenting the initial commit of an HTML project.
+
+Commit: "${msg}"
+Files added: ${stats.total || '?'}
+Lines: +${stats.additions || '?'}
+
+Diff:
+${diff.slice(0, 2500)}
+
+Write a commit annotation in this markdown format:
+
+## 🧾 Commit Annotation
+
+### 📁 What This Establishes
+- List every major HTML element, section, component introduced
+- Mention specific tags, classes, IDs
+
+### 🎯 Functional Purpose
+- What does this page do for the user?
+- What is the user experience?
+
+### 🔧 Technical Foundation
+- Technologies used (HTML, CSS framework, JS libraries)
+- Structural patterns
+
+### 📊 Size
+- Lines introduced: +${stats.additions || '?'}
+
+---
+*Auto-annotated by DevAgent (Vertex AI)*`
+        : `You are a senior developer documenting a Git commit.
+
+Commit: "${msg}"
+Stats: +${stats.additions || '?'} / -${stats.deletions || '?'} lines, ${stats.total || '?'} files
+
+Diff:
+${diff.slice(0, 2500)}
+
+Write a commit annotation in this markdown format:
+
+## 🧾 Commit Annotation
+
+### 📝 What Changed
+- List specific elements added (+), removed (-), modified (~)
+- Mention exact tag names, classes, IDs, attributes
+
+### 🎯 Functional Impact
+- What does each change DO for the user?
+- E.g. "Added nav bar → users can now navigate between sections"
+
+### 🔧 Technical Notes
+- Structural decisions
+- Side effects or dependencies
+- Code quality observations
+
+### 📊 Diff Summary
+- Lines added: +${stats.additions || '?'}
+- Lines removed: -${stats.deletions || '?'}
+- Files changed: ${stats.total || '?'}
+
+---
+*Auto-annotated by DevAgent (Vertex AI)*`;
+
+      const annotation = await callVertexAI(prompt);
+
+      // Post to GitHub
+      await ghPost(`/repos/${user}/${repo}/commits/${sha}/comments`, { body: annotation });
+
+      log(`  ✓ ${short} annotated`, 's');
+      setCommitStatus(i, 'annotated', '✓ Done');
+      success++;
+
+    } catch(e) {
+      log(`  ❌ ${short}: ${e.message}`, 'e');
+      setCommitStatus(i, 'error', 'Error');
+    }
+
+    setProgress(i + 1, commits.length);
+    await new Promise(r => setTimeout(r, 1000));
+  }
+
+  log('', 'i');
+  log(`✅ Complete! ${success}/${commits.length} commits annotated`, 's');
+  log(`🔗 https://github.com/${user}/${repo}/commits`, 's');
+
+  setStatus('done', `${success}/${commits.length} Done`);
+  document.getElementById('annotateBtn').disabled = false;
+  document.getElementById('doneSection').classList.remove('hidden');
+  document.getElementById('repoLink').href = `https://github.com/${user}/${repo}/commits`;
+  isRunning = false;
+}
+
+function setCommitStatus(i, state, label) {
+  const item = document.getElementById(`ci-${i}`);
+  const st = document.getElementById(`cst-${i}`);
+  if (item) { item.className = `commit-item ${state}`; }
+  if (st) {
+    const cls = { processing:'cs-processing', annotated:'cs-done', error:'cs-error' }[state] || 'cs-pending';
+    st.className = `c-status ${cls}`;
+    st.textContent = label;
   }
 }
 
-// ── Expiry countdown ──────────────────────────────────────────────────
-function startExpiryCountdown() {
-  if (expiryTimer) clearInterval(expiryTimer);
-  expiryTimer = setInterval(() => {
-    const remaining = tokenExpiry - Date.now();
-    if (remaining <= 0) {
-      clearInterval(expiryTimer);
-      document.getElementById('tokenExpiry').textContent = 'EXPIRED';
-      document.getElementById('expiryFill').style.width = '0%';
-      document.getElementById('expiryFill').style.background = 'var(--red)';
-      accessToken = null;
-      return;
-    }
-    const totalMs = 3600 * 1000;
-    const pct = (remaining / totalMs) * 100;
-    const mins = Math.floor(remaining / 60000);
-    const secs = Math.floor((remaining % 60000) / 1000);
-    document.getElementById('tokenExpiry').textContent = `${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
-    document.getElementById('expiryFill').style.width = pct + '%';
-    if (pct < 20) document.getElementById('expiryFill').style.background = 'var(--red)';
-    else if (pct < 50) document.getElementById('expiryFill').style.background = 'var(--yellow)';
-  }, 1000);
+function setProgress(current, total) {
+  document.getElementById('progressFill').style.width = total ? (current/total*100)+'%' : '0%';
+  document.getElementById('progressLabel').textContent = `${current} / ${total} annotated`;
 }
 
-// ── Launch Agent ──────────────────────────────────────────────────────
-function launchAgent(agentId) {
-  if (!accessToken) { alert('Please sign in first'); return; }
-
-  const baseUrl = AGENTS[agentId];
-  if (!baseUrl) { alert('Agent URL not configured yet'); return; }
-
-  // Pass token + project as URL parameters
-  const params = new URLSearchParams({
-    token: accessToken,
-    project: projectId,
-    expires: tokenExpiry
-  });
-
-  const agentUrl = `${baseUrl}?${params.toString()}`;
-  window.open(agentUrl, '_blank');
+function setStatus(state, label) {
+  const badge = document.getElementById('statusBadge');
+  const cls = { idle:'badge-idle', run:'badge-run', done:'badge-done', err:'badge-err' }[state];
+  badge.className = `badge ${cls}`;
+  badge.innerHTML = `<span class="pulse"></span>${label}`;
 }
 </script>
 </body>
